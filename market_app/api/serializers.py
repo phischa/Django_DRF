@@ -3,10 +3,15 @@ from market_app.models import Market
 from rest_framework import status
 
 def validate_no_X(value):
+        errors = []
         if 'X' in value:
-            raise serializers.ValidationError(
-                {'location': 'No X in location.'}
-            )
+            errors.append('No X in location.')
+        if 'Y' in value:
+            errors.append('No Y in location.')
+
+        if errors:    
+            raise serializers.ValidationError(errors)
+        
         return value
 
 class MarketSerializer(serializers.Serializer):
