@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from market_app.models import Market
+from market_app.models import Market, Seller
 from rest_framework import status
 
 def validate_no_X(value):
@@ -31,3 +31,28 @@ class MarketSerializer(serializers.Serializer):
         instance.net_worth = validated_data.get('net_worth', instance.net_worth)
         instance.save()
         return instance
+    
+class SellerDetailSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(max_length=255)
+    contact_info = serializers.CharField(max_length=255)
+    """ markets = MarketSerializer(many=True, read_only=True) """
+    markets = serializers.StringRelatedField(many=True)
+
+class SellerCreateSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=255)
+    contact_info = serializers.CharField(max_length=255)
+    markets = serializers.ListField(child=serializers.IntegerField(), write_only=True)
+
+    def validate_markets(self, value):
+        markets = Market.objects.filter(id__in=value)
+        if len(markets) != len(value):
+            raise serializers.ValidationError("One or more MarketIDs not found!")
+        return value
+    
+    def create(self, validated_data):
+        market_ids = validated_data.pop("markets")
+        seller = Seller.objects.create(**validated_data)
+        markets_list = Market.objects.filter(id__in=market_ids)
+        seller.markets.set(markets_list)
+        return seller
