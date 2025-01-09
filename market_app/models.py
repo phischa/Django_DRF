@@ -18,7 +18,7 @@ class Seller(models.Model):
     markets = models.ManyToManyField(Market, related_name="sellers")
 
     def __str__(self):
-        return self.name
+        return f"{self.name}, {self.contact_info}"
 
 
 class Product(models.Model):
