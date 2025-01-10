@@ -3,8 +3,24 @@ from market_app.models import Market, Seller, Product
 from rest_framework import status
 
 
-class MarketSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
+class MarketSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Market
+        fields = '__all__'
+
+    def validate_name(self, value):
+        errors = []
+        if 'X' in value:
+            errors.append('No X in location.')
+        if 'Y' in value:
+            errors.append('No Y in location.')
+
+        if errors:    
+            raise serializers.ValidationError(errors)
+        
+        return value
+
+    """ id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(max_length=255)
     location = serializers.CharField(max_length=255) #validators=[validate_no_X]
     description = serializers.CharField()
@@ -19,7 +35,8 @@ class MarketSerializer(serializers.Serializer):
         instance.description = validated_data.get('description', instance.description)
         instance.net_worth = validated_data.get('net_worth', instance.net_worth)
         instance.save()
-        return instance
+        return instance """
+    
     
 class SellerDetailSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
@@ -86,14 +103,3 @@ class ProductCreateSerializer(serializers.Serializer):
         )
         return product
     
-""" def validate_no_X(value):
-        errors = []
-        if 'X' in value:
-            errors.append('No X in location.')
-        if 'Y' in value:
-            errors.append('No Y in location.')
-
-        if errors:    
-            raise serializers.ValidationError(errors)
-        
-        return value """
