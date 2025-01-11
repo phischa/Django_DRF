@@ -6,7 +6,8 @@ from rest_framework import status
 class MarketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Market
-        fields = '__all__'
+        fields = ['id', 'name', 'location', 'description', 'net_worth']
+        #exclude = [] entweder fields oder exclude
 
     def validate_name(self, value):
         errors = []
@@ -19,6 +20,24 @@ class MarketSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(errors)
         
         return value
+    
+
+class SellerSerializer(serializers.ModelSerializer):
+    markets = MarketSerializer(many=True, read_only=True) 
+    market_ids = serializers.PrimaryKeyRelatedField(
+        queryset=Market.objects.all(),
+        many=True,
+        write_only=True,
+        source='markets'
+    )
+    market_count = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Seller
+        fields = '__all__'
+
+    def get_market_count(self, obj):
+        return obj.markets.count()
 
     """ id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(max_length=255)
@@ -38,11 +57,11 @@ class MarketSerializer(serializers.ModelSerializer):
         return instance """
     
     
-class SellerDetailSerializer(serializers.Serializer):
+""" class SellerDetailSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(max_length=255)
     contact_info = serializers.CharField(max_length=255)
-    """ markets = MarketSerializer(many=True, read_only=True) """
+    #markets = MarketSerializer(many=True, read_only=True)
     markets = serializers.StringRelatedField(many=True)
 
 class SellerCreateSerializer(serializers.Serializer):
@@ -61,7 +80,7 @@ class SellerCreateSerializer(serializers.Serializer):
         seller = Seller.objects.create(**validated_data)
         markets_list = Market.objects.filter(id__in=market_ids)
         seller.markets.set(markets_list)
-        return seller
+        return seller """
     
 
 class ProductDetailSerializer(serializers.Serializer):
