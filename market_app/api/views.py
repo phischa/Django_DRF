@@ -1,6 +1,6 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import MarketSerializer, SellerSerializer, \
+from .serializers import MarketSerializer, MarketHyperlinkedSerializer, SellerSerializer, \
 ProductDetailSerializer, ProductCreateSerializer
 from market_app.models import Market, Seller, Product
 
@@ -9,7 +9,7 @@ def markets_view(request):
 
     if request.method == 'GET':
         markets = Market.objects.all()
-        serializer = MarketSerializer(markets, many=True, context={'request': request})
+        serializer = MarketHyperlinkedSerializer(markets, many=True, context={'request': request}, fields=('id', 'name'))
         return Response(serializer.data)
     
     if request.method == 'POST':
