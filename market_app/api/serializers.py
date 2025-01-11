@@ -3,11 +3,14 @@ from market_app.models import Market, Seller, Product
 from rest_framework import status
 
 
-class MarketSerializer(serializers.ModelSerializer):
+class MarketSerializer(serializers.HyperlinkedModelSerializer):
+
+    sellers = serializers.StringRelatedField(many=True, read_only=True)
+
     class Meta:
         model = Market
-        fields = ['id', 'name', 'location', 'description', 'net_worth']
-        #exclude = [] entweder fields oder exclude
+        #fields = ['id', 'name', 'location', 'description', 'net_worth'] entweder fields oder exclude
+        exclude = []
 
     def validate_name(self, value):
         errors = []
@@ -34,7 +37,7 @@ class SellerSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Seller
-        fields = '__all__'
+        fields = ['id', 'market_ids', 'name', 'contact_info', 'markets', 'market_count' ]
 
     def get_market_count(self, obj):
         return obj.markets.count()
