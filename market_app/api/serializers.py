@@ -39,7 +39,8 @@ class SellerSerializer(serializers.ModelSerializer):
     def get_market_count(self, obj):
         return obj.markets.count()
 
-    """ id = serializers.IntegerField(read_only=True)
+    """ class MarketSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(max_length=255)
     location = serializers.CharField(max_length=255) #validators=[validate_no_X]
     description = serializers.CharField()
