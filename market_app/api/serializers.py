@@ -64,6 +64,29 @@ class SellerSerializer(serializers.ModelSerializer):
 
     def get_market_count(self, obj):
         return obj.markets.count()
+    
+class SellerHyperlinkedSerializer(SellerSerializer, serializers.HyperlinkedModelSerializer):
+    markets = MarketSerializer(many=True, read_only=True)
+    market_ids = serializers.PrimaryKeyRelatedField(
+        queryset=Market.objects.all(),
+        many=True,
+        write_only=True,
+        source='markets'
+    )
+    market_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Seller
+        fields = ['id', 'market_ids', 'name', 'contact_info', 'markets', 'market_count' ]
+
+    def get_market_count(self, obj):
+        return obj.markets.count()
+    
+class ProductSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Product
+        exclude = []
 
     """ class MarketSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
@@ -108,9 +131,8 @@ class SellerCreateSerializer(serializers.Serializer):
         markets_list = Market.objects.filter(id__in=market_ids)
         seller.markets.set(markets_list)
         return seller """
-    
 
-class ProductDetailSerializer(serializers.Serializer):
+""" class ProductDetailSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(max_length=255)
     description = serializers.CharField(max_length=255)
@@ -149,3 +171,4 @@ class ProductCreateSerializer(serializers.Serializer):
         )
         return product
     
+"""
