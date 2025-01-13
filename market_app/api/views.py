@@ -5,12 +5,21 @@ from market_app.models import Market, Seller, Product
 from .serializers import MarketSerializer, MarketHyperlinkedSerializer, SellerSerializer, \
     SellerHyperlinkedSerializer, SellerListSerializer, ProductSerializer
 
-from rest_framework import mixins
-from rest_framework import generics
-from rest_framework import viewsets
+from rest_framework import mixins, generics, viewsets
 
 
-class ProductViewSet(viewsets.ViewSet):
+
+class ListRetrieveViewSet(mixins.ListModelMixin,            #könnte z.B. an ProductViewSet vererbt werden
+                            mixins.RetrieveModelMixin,      #dadurch könnte man nur List zeigen und retrieven
+                                viewsets.GenericViewSet):
+    pass
+
+
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+""" class ProductViewSetOld(viewsets.ViewSet):
     queryset = Product.objects.all()
     def list(self, request):
         serializer = ProductSerializer(self.queryset, many=True)
@@ -33,15 +42,7 @@ class ProductViewSet(viewsets.ViewSet):
         product = get_object_or_404(self.queryset, pk=pk)
         serializer = ProductSerializer(self.queryset, pk=pk)
         product.delete()
-        return Response(serializer.data)
-
-
-
-
-
-
-
-
+        return Response(serializer.data) """
 
 
 class MarketsView(generics.ListCreateAPIView): 
