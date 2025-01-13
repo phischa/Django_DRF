@@ -2,8 +2,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from .serializers import MarketSerializer, MarketHyperlinkedSerializer, SellerSerializer, SellerHyperlinkedSerializer, \
-    ProductSerializer
+from .serializers import MarketSerializer, MarketHyperlinkedSerializer, SellerSerializer, \
+    SellerHyperlinkedSerializer, SellerListSerializer, ProductSerializer
 from market_app.models import Market, Seller, Product
 from rest_framework import mixins
 from rest_framework import generics
@@ -19,22 +19,14 @@ class MarketDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = MarketSerializer
 
 
-""" class MarketDetailView(mixins.RetrieveModelMixin,
-                    mixins.UpdateModelMixin,
-                    mixins.DestroyModelMixin,
-                    generics.GenericAPIView):
-    
-    queryset = Market.objects.all()
-    serializer_class = MarketSerializer
+class SellerOfMarketList(generics.ListAPIView):
+    serializer_class = SellerListSerializer
 
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        market = Market.objects.get(pk = pk)
+        return market.sellers.all()
 
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
-
-    def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs) """
 
 
 class SellersView(mixins.ListModelMixin,
@@ -56,7 +48,7 @@ class SellerDetailView(mixins.RetrieveModelMixin,
                     generics.GenericAPIView):
     
     queryset = Seller.objects.all()
-    serializer_class = SellerSerializer
+    serializer_class = SellerListSerializer
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
@@ -97,7 +89,24 @@ class ProductDetailView(mixins.RetrieveModelMixin,
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
+
+""" class MarketDetailView(mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin,
+                    generics.GenericAPIView):
     
+    queryset = Market.objects.all()
+    serializer_class = MarketSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs) """
+
 """ @api_view(['GET','POST'])
 def markets_view(request):
 

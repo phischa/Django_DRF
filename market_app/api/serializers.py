@@ -65,6 +65,13 @@ class SellerSerializer(serializers.ModelSerializer):
     def get_market_count(self, obj):
         return obj.markets.count()
     
+class SellerListSerializer(SellerSerializer, serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Seller
+        fields = ['url', 'market_ids', 'name', 'contact_info', 'market_count' ]
+
+    
 class SellerHyperlinkedSerializer(SellerSerializer, serializers.HyperlinkedModelSerializer):
     markets = MarketSerializer(many=True, read_only=True)
     market_ids = serializers.PrimaryKeyRelatedField(
