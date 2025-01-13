@@ -1,30 +1,25 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.views import APIView
 from .serializers import MarketSerializer, MarketHyperlinkedSerializer, SellerSerializer, SellerHyperlinkedSerializer, \
     ProductSerializer
 from market_app.models import Market, Seller, Product
-
-from rest_framework.views import APIView
 from rest_framework import mixins
 from rest_framework import generics
 
 
-class MarketsView(mixins.ListModelMixin,
-                mixins.CreateModelMixin,
-                generics.GenericAPIView):
-
+class MarketsView(generics.ListCreateAPIView): 
+    #mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
     queryset = Market.objects.all()
     serializer_class = MarketHyperlinkedSerializer
-
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
     
+class MarketDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Market.objects.all()
+    serializer_class = MarketSerializer
 
-class MarketDetailView(mixins.RetrieveModelMixin,
+
+""" class MarketDetailView(mixins.RetrieveModelMixin,
                     mixins.UpdateModelMixin,
                     mixins.DestroyModelMixin,
                     generics.GenericAPIView):
@@ -39,7 +34,7 @@ class MarketDetailView(mixins.RetrieveModelMixin,
         return self.update(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs)
+        return self.destroy(request, *args, **kwargs) """
 
 
 class SellersView(mixins.ListModelMixin,
