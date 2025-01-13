@@ -18,10 +18,9 @@ class MarketSerializer(serializers.ModelSerializer):
             errors.append('No X in location.')
         if 'Y' in value:
             errors.append('No Y in location.')
-
+            
         if errors:    
             raise serializers.ValidationError(errors)
-        
         return value
     
 
@@ -94,6 +93,13 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         exclude = []
+
+
+
+
+
+
+
 
     """ class MarketSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)

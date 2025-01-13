@@ -1,12 +1,33 @@
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404
+from market_app.models import Market, Seller, Product
+
 from .serializers import MarketSerializer, MarketHyperlinkedSerializer, SellerSerializer, \
     SellerHyperlinkedSerializer, SellerListSerializer, ProductSerializer
-from market_app.models import Market, Seller, Product
+
 from rest_framework import mixins
 from rest_framework import generics
+from rest_framework import viewsets
+
+
+class ProductViewSet(viewsets.ViewSet):
+    queryset = Product.objects.all()
+    def list(self, request):
+        serializer = ProductSerializer(self.queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        user = get_object_or_404(self.queryset, pk=pk)
+        serializer = ProductSerializer(user)
+        return Response(serializer.data)
+
+
+
+
+
+
+
+
 
 
 class MarketsView(generics.ListCreateAPIView): 
@@ -26,6 +47,11 @@ class SellerOfMarketList(generics.ListAPIView):
         pk = self.kwargs.get('pk')
         market = Market.objects.get(pk = pk)
         return market.sellers.all()
+    
+    def perform_create(self, serializer):
+        pk = self.kwargs.get('pk')
+        market = Market.objects.get(pk = pk)
+        serializer.save(markets=[market])
 
 
 
