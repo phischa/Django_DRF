@@ -17,8 +17,22 @@ class ProductViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
-        user = get_object_or_404(self.queryset, pk=pk)
-        serializer = ProductSerializer(user)
+        product = get_object_or_404(self.queryset, pk=pk)
+        serializer = ProductSerializer(product)
+        return Response(serializer.data)
+    
+    def create(self, request):
+        serializer = ProductSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
+
+    def destroy(self, request, pk=None):
+        product = get_object_or_404(self.queryset, pk=pk)
+        serializer = ProductSerializer(self.queryset, pk=pk)
+        product.delete()
         return Response(serializer.data)
 
 
